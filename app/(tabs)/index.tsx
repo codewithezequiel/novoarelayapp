@@ -1,23 +1,34 @@
-import { Stack } from 'expo-router';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { View, Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import MyTripsScreen from '~/app/screens/adminhomenavigator/MyTripsScreen';
+import MyCompanyTripsScreen from '~/app/screens/adminhomenavigator/MyCompanyTrips';
+import EmployeeHomeScreen from '~/app/screens/employeehomenavigator/EmployeeHome'; // Assuming this is the employee screen
 
-import { StyleSheet, View } from 'react-native';
+const Tab = createMaterialTopTabNavigator();
 
-import { ScreenContent } from '~/components/ScreenContent';
+export default function HomeTabs() {
+  const { role } = useLocalSearchParams(); // Get the role passed from TabLayout
 
-export default function Home() {
-  return (
-    <>
-      <Stack.Screen options={{ title: 'Tab One' }} />
-      <View style={styles.container}>
-        <ScreenContent path="app/(tabs)/index.tsx" title="Tab One" />
+  // If the role is 'admin', show the top tabs; otherwise, show employee home screen
+  if (role === 'admin') {
+    return (
+      <View style={{ flex: 1, backgroundColor: 'black' }}>
+        <Tab.Navigator
+          screenOptions={{
+            tabBarLabelStyle: { fontSize: 16, fontWeight: 'bold', textTransform: 'none' },
+            tabBarIndicatorStyle: { backgroundColor: 'white', height: 3 },
+            tabBarStyle: { backgroundColor: 'black' },
+            tabBarActiveTintColor: 'white',
+            tabBarInactiveTintColor: 'gray',
+          }}>
+          <Tab.Screen name="My Trips" component={MyTripsScreen} />
+          <Tab.Screen name="Company Trips" component={MyCompanyTripsScreen} />
+        </Tab.Navigator>
       </View>
-    </>
-  );
-}
+    );
+  }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-  },
-});
+  // If the role is 'employee', show the employee home screen without top tabs
+  return <EmployeeHomeScreen />;
+}
